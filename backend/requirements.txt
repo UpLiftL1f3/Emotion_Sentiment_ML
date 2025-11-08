@@ -1,0 +1,9 @@
+fastapi>=0.115
+uvicorn[standard]>=0.30
+pydantic>=2.6
+transformers>=4.44
+torch>=2.4        # macOS has MPS; Linux CPU works too
+accelerate>=0.33
+safetensors>=0.4
+numpy
+python-dotenv

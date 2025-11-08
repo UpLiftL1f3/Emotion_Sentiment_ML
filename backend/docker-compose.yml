@@ -1,0 +1,23 @@
+# docker-compose.yml
+services:
+    ml-api:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: ml-api
+        environment:
+            # point to your Vite origin
+            - VITE_ORIGIN=http://localhost:5173
+            # tune torch threads if you like
+            - TORCH_NUM_THREADS=1
+        ports:
+            - "8000:8000"
+        # Dev convenience: mount code + exports so you can edit without rebuild
+        volumes:
+            - ./app:/app/app
+            - ./exports:/app/exports
+        command: >
+            uvicorn app.app:app
+            --host 0.0.0.0
+            --port 8000
+            --reload
