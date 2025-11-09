@@ -37,13 +37,13 @@
 
 // src/App.tsx
 import { useLayoutEffect, useRef, useState } from "react";
-import { usePredictCompare } from "./features/predict/usePredictCompare";
+import { usePredict } from "./features/predict/usePredict";
 import { getInitialTheme, toggleTheme, type Theme } from "./theme";
 
 export default function App() {
     const [text, setText] = useState("");
     const [theme, setThemeState] = useState<Theme>(getInitialTheme());
-    const predict = usePredictCompare();
+    const predict = usePredict();
     const textareaRef = useRef<HTMLTextAreaElement | null>(null);
     const MAX_ROWS = 8;
 
