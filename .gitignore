@@ -1,0 +1,17 @@
+# app bundles
+backend/**
+frontend/**
+
+# common large stuff
+node_modules/
+dist/
+build/
+*.zip
+*.joblib
+*.pt
+*.onnx
+*.bin
+*.safetensors
+*.h5
+.DS_Store
+
