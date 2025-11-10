@@ -2,25 +2,25 @@
 import { useMutation } from "@tanstack/react-query";
 import { apiPost } from "../../lib/api";
 
-export type PredictResponse = {
-    winner: string;
-    models: Record<
-        string,
-        {
-            sentiment: { label: string; probs: number[] };
-            emotion: { label: string; probs: number[] };
-        }
-    >;
+export type ModelOutput = {
+    sentiment: string;
+    sentiment_probs: Record<string, number>;
+    emotion: string;
+    emotion_probs: Record<string, number>;
 };
 
-export function usePredictCompare() {
+export type PredictMultiOut = {
+    results: Record<string, ModelOutput[]>;
+};
+
+export function usePredictMulti() {
     return useMutation({
-        mutationKey: ["predict-compare"],
-        mutationFn: (text: string) =>
-            apiPost<PredictResponse>("/api/predict_compare", { text }),
+        mutationKey: ["predict-multi"],
+        mutationFn: (payload: { text: string; models: string[] }) =>
+            apiPost<PredictMultiOut>("/api/predict_multi", payload),
         // optional: centralize error toast, analytics, etc.
         onError: (err) => {
-            console.error("predict_compare failed:", err);
+            console.error("predict_multi failed:", err);
         },
     });
 }

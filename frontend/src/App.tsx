@@ -37,13 +37,13 @@
 
 // src/App.tsx
 import { useLayoutEffect, useRef, useState } from "react";
-import { usePredict } from "./features/predict/usePredict";
+import { usePredictMulti } from "./features/predict/usePredictCompare";
 import { getInitialTheme, toggleTheme, type Theme } from "./theme";
 
 export default function App() {
     const [text, setText] = useState("");
     const [theme, setThemeState] = useState<Theme>(getInitialTheme());
-    const predict = usePredict();
+    const predictMulti = usePredictMulti();
     const textareaRef = useRef<HTMLTextAreaElement | null>(null);
     const MAX_ROWS = 8;
 
@@ -79,7 +79,12 @@ export default function App() {
 
     function onSubmit(e: React.FormEvent) {
         e.preventDefault();
-        predict.mutate(text.trim());
+        const cleaned = text.trim();
+        if (!cleaned) return;
+        predictMulti.mutate({
+            text: cleaned,
+            models: ["multihead", "twoModelHead"],
+        });
     }
 
     return (
@@ -143,7 +148,7 @@ export default function App() {
                 />
                 <button
                     type="submit"
-                    disabled={predict.isPending || !text.trim()}
+                    disabled={predictMulti.isPending || !text.trim()}
                     style={{
                         marginTop: 12,
                         padding: "10px 16px",
@@ -153,16 +158,16 @@ export default function App() {
                         color: "var(--button-text)",
                     }}
                 >
-                    {predict.isPending ? "Analyzing…" : "Analyze"}
+                    {predictMulti.isPending ? "Analyzing…" : "Analyze"}
                 </button>
 
-                {predict.isError && (
+                {predictMulti.isError && (
                     <p style={{ marginTop: 12, color: "#ff7a7a" }}>
-                        {(predict.error as Error).message}
+                        {(predictMulti.error as Error).message}
                     </p>
                 )}
 
-                {predict.isSuccess && (
+                {predictMulti.isSuccess && (
                     <pre
                         style={{
                             marginTop: 12,
@@ -172,7 +177,7 @@ export default function App() {
                             overflow: "auto",
                         }}
                     >
-                        {JSON.stringify(predict.data, null, 2)}
+                        {JSON.stringify(predictMulti.data, null, 2)}
                     </pre>
                 )}
             </form>
