@@ -83,7 +83,7 @@ export default function App() {
         if (!cleaned) return;
         predictMulti.mutate({
             text: cleaned,
-            models: ["multihead", "twoModelHead"],
+            models: ["multihead", "twoModelHead", "lr", "svm"],
         });
     }
 
