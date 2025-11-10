@@ -1,6 +1,4 @@
-# app bundles
-backend/**
-frontend/**
+
 
 # common large stuff
 node_modules/
