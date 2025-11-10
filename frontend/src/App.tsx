@@ -71,6 +71,38 @@ export default function App() {
         el.style.overflowY = el.scrollHeight > newHeight ? "auto" : "hidden";
     }
 
+    function formatPercent(value: number): string {
+        const pct = Math.round(value * 1000) / 10; // one decimal
+        return `${pct}%`;
+    }
+
+    function sortedEntries(
+        probs: Record<string, number> | undefined
+    ): Array<[string, number]> {
+        if (!probs) return [];
+        return Object.entries(probs).sort((a, b) => b[1] - a[1]);
+    }
+
+    function capFirst(s: string | undefined | null): string {
+        if (!s) return "";
+        return s.charAt(0).toUpperCase() + s.slice(1);
+    }
+
+    function titleFor(key: string): string {
+        switch (key) {
+            case "multihead":
+                return "DistilBERT";
+            case "twoModelHead":
+                return "RoBERTa";
+            case "lr":
+                return "Logistic Regression";
+            case "svm":
+                return "Support Vector Machine";
+            default:
+                return key;
+        }
+    }
+
     useLayoutEffect(() => {
         if (textareaRef.current) {
             adjustTextareaHeight(textareaRef.current, MAX_ROWS);
@@ -125,41 +157,51 @@ export default function App() {
                 onSubmit={onSubmit}
                 style={{
                     display: "flex",
-                    width: "min(90vw, 560px)",
+                    width: "min(90vw, 1440px)",
                     justifyContent: "center",
                     flexDirection: "column",
                 }}
             >
-                <textarea
-                    ref={textareaRef}
-                    value={text}
-                    onChange={(e) => setText(e.target.value)}
-                    placeholder="Type text for analysis…"
+                <div
                     style={{
-                        width: "100%",
-                        padding: "14px 16px",
-                        borderRadius: 12,
-                        border: "1px solid var(--border)",
-                        background: "var(--input-bg)",
-                        color: "var(--text)",
-                        resize: "none",
-                    }}
-                    rows={1}
-                />
-                <button
-                    type="submit"
-                    disabled={predictMulti.isPending || !text.trim()}
-                    style={{
-                        marginTop: 12,
-                        padding: "10px 16px",
-                        borderRadius: 10,
+                        width: "min(90vw, 560px)",
                         alignSelf: "center",
-                        background: "var(--button-bg)",
-                        color: "var(--button-text)",
+                        display: "flex",
+                        flexDirection: "column",
                     }}
                 >
-                    {predictMulti.isPending ? "Analyzing…" : "Analyze"}
-                </button>
+                    <textarea
+                        ref={textareaRef}
+                        value={text}
+                        onChange={(e) => setText(e.target.value)}
+                        placeholder="Type text for analysis…"
+                        style={{
+                            width: "100%",
+                            padding: "14px 16px",
+                            borderRadius: 12,
+                            border: "1px solid var(--border)",
+                            background: "var(--input-bg)",
+                            color: "var(--text)",
+                            resize: "none",
+                        }}
+                        rows={1}
+                    />
+                    <button
+                        type="submit"
+                        disabled={predictMulti.isPending || !text.trim()}
+                        style={{
+                            marginTop: 12,
+                            padding: "10px 16px",
+                            borderRadius: 10,
+                            alignSelf: "center",
+                            background: "var(--button-bg)",
+                            color: "var(--button-text)",
+                            marginBottom: 42,
+                        }}
+                    >
+                        {predictMulti.isPending ? "Analyzing…" : "Analyze"}
+                    </button>
+                </div>
 
                 {predictMulti.isError && (
                     <p style={{ marginTop: 12, color: "#ff7a7a" }}>
@@ -167,18 +209,245 @@ export default function App() {
                     </p>
                 )}
 
-                {predictMulti.isSuccess && (
-                    <pre
+                {predictMulti.isSuccess && predictMulti.data && (
+                    <div
                         style={{
                             marginTop: 12,
-                            background: "var(--card-bg)",
-                            padding: 12,
+                            width: "90%",
+                            alignSelf: "center",
+                            border: "1px solid var(--border)",
                             borderRadius: 12,
-                            overflow: "auto",
+                            overflow: "hidden",
+                            // background: "red",
+                            background: "var(--card-bg)",
                         }}
                     >
-                        {JSON.stringify(predictMulti.data, null, 2)}
-                    </pre>
+                        {/* 2x2 grid with a cross split */}
+                        <div
+                            style={{
+                                display: "grid",
+                                gridTemplateColumns: "1fr 1fr",
+                                gridTemplateRows: "1fr 1fr",
+                            }}
+                        >
+                            {["multihead", "twoModelHead", "lr", "svm"].map(
+                                (name, idx) => {
+                                    const res =
+                                        predictMulti.data.results?.[name]?.[0];
+                                    const isLeftCol = idx % 2 === 0;
+                                    const isTopRow = idx < 2;
+                                    const bgVars = [
+                                        "var(--quad-1-bg)",
+                                        "var(--quad-2-bg)",
+                                        "var(--quad-3-bg)",
+                                        "var(--quad-4-bg)",
+                                    ];
+                                    const cellBg = bgVars[idx % bgVars.length];
+                                    return (
+                                        <div
+                                            key={name}
+                                            style={{
+                                                padding: 11,
+                                                minHeight: 198,
+                                                background: cellBg,
+                                                borderRight: isLeftCol
+                                                    ? "1px solid var(--border)"
+                                                    : undefined,
+                                                borderBottom: isTopRow
+                                                    ? "1px solid var(--border)"
+                                                    : undefined,
+                                                display: "flex",
+                                                flexDirection: "column",
+                                                gap: 7,
+                                            }}
+                                        >
+                                            <div
+                                                style={{
+                                                    fontWeight: 700,
+                                                    fontSize: 16,
+                                                    letterSpacing: 0.3,
+                                                    textAlign: "center",
+                                                    borderBottom:
+                                                        "1px solid var(--border)",
+                                                    paddingBottom: 6,
+                                                    marginBottom: 6,
+                                                }}
+                                            >
+                                                {titleFor(name)}
+                                            </div>
+                                            {!res ? (
+                                                <div
+                                                    style={{
+                                                        opacity: 0.7,
+                                                        fontStyle: "italic",
+                                                    }}
+                                                >
+                                                    No data
+                                                </div>
+                                            ) : (
+                                                <>
+                                                    <div
+                                                        style={{
+                                                            display: "flex",
+                                                            gap: 8,
+                                                            flexWrap: "wrap",
+                                                            alignItems:
+                                                                "baseline",
+                                                        }}
+                                                    >
+                                                        <span
+                                                            style={{
+                                                                fontWeight: 600,
+                                                            }}
+                                                        >
+                                                            Sentiment:
+                                                        </span>
+                                                        <span>
+                                                            {capFirst(
+                                                                res.sentiment
+                                                            )}
+                                                        </span>
+                                                    </div>
+                                                    <div
+                                                        style={{
+                                                            display: "flex",
+                                                            flexWrap: "wrap",
+                                                            // gap: 12,
+                                                            justifyContent:
+                                                                "flex-start",
+                                                            fontSize: 13,
+                                                            marginTop: 6,
+                                                            marginBottom: 10,
+                                                        }}
+                                                    >
+                                                        {sortedEntries(
+                                                            res.sentiment_probs
+                                                        ).map(([label, p]) => (
+                                                            <div
+                                                                key={`s-${label}`}
+                                                                style={{
+                                                                    display:
+                                                                        "flex",
+                                                                    flexDirection:
+                                                                        "column",
+                                                                    alignItems:
+                                                                        "center",
+                                                                    flex: "0 0 120px",
+                                                                    minWidth: 0,
+                                                                    border:
+                                                                        p >= 0.3
+                                                                            ? "2px solid var(--text)"
+                                                                            : "1px solid transparent",
+                                                                    borderRadius: 6,
+                                                                    padding: 4,
+                                                                }}
+                                                            >
+                                                                <span
+                                                                    style={{
+                                                                        fontWeight: 600,
+                                                                    }}
+                                                                >
+                                                                    {capFirst(
+                                                                        label
+                                                                    )}
+                                                                </span>
+                                                                <span
+                                                                    style={{
+                                                                        opacity: 0.85,
+                                                                    }}
+                                                                >
+                                                                    {formatPercent(
+                                                                        p
+                                                                    )}
+                                                                </span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+
+                                                    <div
+                                                        style={{
+                                                            display: "flex",
+                                                            gap: 8,
+                                                            flexWrap: "wrap",
+                                                            alignItems:
+                                                                "baseline",
+                                                            marginTop: 14,
+                                                        }}
+                                                    >
+                                                        <span
+                                                            style={{
+                                                                fontWeight: 600,
+                                                            }}
+                                                        >
+                                                            Emotion:
+                                                        </span>
+                                                        <span>
+                                                            {capFirst(
+                                                                res.emotion
+                                                            )}
+                                                        </span>
+                                                    </div>
+                                                    <div
+                                                        style={{
+                                                            display: "grid",
+                                                            gridTemplateColumns:
+                                                                "repeat(6, minmax(0, 8em))",
+                                                            gap: 0,
+                                                            fontSize: 13,
+                                                            marginTop: 6,
+                                                        }}
+                                                    >
+                                                        {sortedEntries(
+                                                            res.emotion_probs
+                                                        ).map(([label, p]) => (
+                                                            <div
+                                                                key={`e-${label}`}
+                                                                style={{
+                                                                    display:
+                                                                        "flex",
+                                                                    flexDirection:
+                                                                        "column",
+                                                                    alignItems:
+                                                                        "center",
+                                                                    flex: "0 0 120px",
+                                                                    minWidth: 40,
+                                                                    border:
+                                                                        p >= 0.3
+                                                                            ? "2px solid var(--text)"
+                                                                            : "1px solid transparent",
+                                                                    borderRadius: 6,
+                                                                    padding: 4,
+                                                                }}
+                                                            >
+                                                                <span
+                                                                    style={{
+                                                                        fontWeight: 600,
+                                                                    }}
+                                                                >
+                                                                    {capFirst(
+                                                                        label
+                                                                    )}
+                                                                </span>
+                                                                <span
+                                                                    style={{
+                                                                        opacity: 0.85,
+                                                                    }}
+                                                                >
+                                                                    {formatPercent(
+                                                                        p
+                                                                    )}
+                                                                </span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </>
+                                            )}
+                                        </div>
+                                    );
+                                }
+                            )}
+                        </div>
+                    </div>
                 )}
             </form>
         </div>

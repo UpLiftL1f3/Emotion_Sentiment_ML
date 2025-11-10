@@ -9,6 +9,11 @@
     --button-bg: #1a1a1a;
     --button-text: #ffffff;
     --button-border: transparent;
+    /* Quadrant backgrounds (light) */
+    --quad-1-bg: #f7f4ff; /* soft purple */
+    --quad-2-bg: #eef9ff; /* light blue */
+    --quad-3-bg: #fff7ef; /* warm cream */
+    --quad-4-bg: #eefbf2; /* light green */
 
     font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
     line-height: 1.5;
@@ -34,6 +39,11 @@
     --button-bg: #f9f9f9;
     --button-text: #111111;
     --button-border: transparent;
+    /* Quadrant backgrounds (dark) */
+    --quad-1-bg: #1b1624;
+    --quad-2-bg: #0f1d24;
+    --quad-3-bg: #241b10;
+    --quad-4-bg: #112017;
 }
 
 a {
