@@ -1,5 +1,5 @@
 # Demo
 
-![Demo thumbnail](docs/thumbnail.png)
+![Demo](docs/demo.gif)
 
-[▶ Watch the MP4](docs/demo.mp4)
+[▶ Full MP4](docs/demo.mp4)
