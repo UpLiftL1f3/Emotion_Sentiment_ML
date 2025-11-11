@@ -1,1 +1,5 @@
-<video src="docs/demo.mp4" controls muted playsinline style="max-width:100%;height:auto;"></video>
+# Demo
+
+![Demo thumbnail](docs/thumbnail.png)
+
+[▶ Watch the MP4](docs/demo.mp4)
