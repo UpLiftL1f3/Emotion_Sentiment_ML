@@ -10,10 +10,10 @@
     --button-text: #ffffff;
     --button-border: transparent;
     /* Quadrant backgrounds (light) */
-    --quad-1-bg: #f7f4ff; /* soft purple */
-    --quad-2-bg: #eef9ff; /* light blue */
-    --quad-3-bg: #fff7ef; /* warm cream */
-    --quad-4-bg: #eefbf2; /* light green */
+    --quad-1-bg: #ece5ff; /* darker soft purple */
+    --quad-2-bg: #dff2ff; /* darker light blue */
+    --quad-3-bg: #ffead6; /* darker warm cream */
+    --quad-4-bg: #def5e6; /* darker light green */
 
     font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
     line-height: 1.5;
